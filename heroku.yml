@@ -1,0 +1,65 @@
+$ git add .
+$ git commit -m "Procfile"
+$ git push heroku master
+...
+-----> Procfile declares process types: web, worker
+       Compiled slug size is 10.4MB
+-----> Launching... done
+       http://strong-stone-297.herokuapp.com deployed to Heroku
+
+
+To git@heroku.com:strong-stone-297.git
+ * [new branch]      master -> master
+ 
+$ heroku ps
+=== web: `bundle exec rails server -p $PORT`
+web.1: up for 2m
+
+
+$ heroku logs
+2011-04-26T01:24:20-07:00 heroku[slugc]: Slug compilation finished
+2011-04-26T01:24:22+00:00 heroku[web.1]: Running process with command: `bundle exec rails server mongrel -p 46999`
+2011-04-25T18:24:22-07:00 heroku[web.1]: State changed from created to starting
+2011-04-25T18:24:29-07:00 heroku[web.1]: State changed from starting to up
+2011-04-26T01:24:29+00:00 app[web.1]: => Booting Mongrel
+2011-04-26T01:24:29+00:00 app[web.1]: => Rails 3.0.5 application starting in production on http://0.0.0.0:46999
+2011-04-26T01:24:29+00:00 app[web.1]: => Call with -d to detach
+2011-04-26T01:24:29+00:00 app[web.1]: => Ctrl-C to shutdown server
+
+$ heroku ps:scale worker=1
+Scaling worker processes... done, now running 1
+
+$ heroku ps:resize worker=standard-2x
+Resizing dynos and restarting specified processes... done
+worker dynos now standard-2x
+
+$ heroku ps
+=== web: `bundle exec rails server -p $PORT`
+web.1: up for 2m
+
+$ === worker: `env QUEUE=* bundle exec rake resque:work`
+worker.1: up for 5s
+
+$ heroku logs --ps worker
+2011-04-25T18:33:25-07:00 heroku[worker.1]: State changed from created to starting
+2011-04-26T01:33:26+00:00 heroku[worker.1]: Running process with command: `env QUEUE=* bundle exec rake resque:work`
+2011-04-25T18:33:29-07:00 heroku[worker.1]: State changed from starting to up
+2011-04-26T01:33:29+00:00 app[worker.1]: (in /app)
+
+$ heroku ps:scale web=2 worker=4
+Scaling web processes... done, now running 2
+Scaling worker processes... done, now running 4
+
+heroku ps
+=== web: `bundle exec rails server -p $PORT`
+web.1: up for 7m
+web.2: up for 2s
+
+=== worker: `env QUEUE=* bundle exec rake resque:work`
+worker.1: up for 7m
+worker.2: up for 3s
+worker.3: up for 2s
+worker.4: up for 3s
+
+
+$ heroku ps:scale worker=1 urgentworker=5
