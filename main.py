@@ -1,17 +1,14 @@
 from pyrogram import Client, filters
 from pyrogram.types import Message, InlineKeyboardButton, InlineKeyboardMarkup
 from news import LK
+from config import ENVIRONMENT
 
-
-API_ID =12432
-API_HASH = ''
-BOT_TOKEN = ''
 
 bot = Client(
-    "lol",
-    api_id=API_ID,
-    api_hash=API_HASH, 
-    bot_token=BOT_TOKEN
+    "news",
+    api_id=ENVIRONMENT.API_ID,
+    api_hash=ENVIRONMENT.API_HASH, 
+    bot_token=ENVIRONMENT.BOT_TOKEN
 )
 
 @bot.on_message(filters.command("start"))
